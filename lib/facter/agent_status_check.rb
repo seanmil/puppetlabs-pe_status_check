@@ -27,7 +27,11 @@ Facter.add(:agent_status_check, type: :aggregate) do
       { AS002: result.match?(%r{8142\s*ESTABLISHED}) }
     else
       result = Facter::Core::Execution.execute("ss -onp state established '( dport = :8142 )' ", { timeout: PEStatusCheck.facter_timeout })
-      { AS002: result.include?('pxp-agent') }
+      if result.include?('users:(')
+        { AS002: result.include?('pxp-agent') }
+      else
+        { AS002: result.include?(':8142') }
+      end
     end
   rescue Facter::Core::Execution::ExecutionFailure => e
     Facter.warn("agent_status_check.AS002 failed to get socket status: #{e.message}")
