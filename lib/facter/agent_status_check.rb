@@ -26,7 +26,7 @@ Facter.add(:agent_status_check, type: :aggregate) do
       result = Facter::Core::Execution.execute('netstat -np tcp', { timeout: PEStatusCheck.facter_timeout })
       { AS002: result.match?(%r{8142\s*ESTABLISHED}) }
     else
-      result = Facter::Core::Execution.execute("ss -onp state established '( dport = :8142 )' ", { timeout: PEStatusCheck.facter_timeout })
+      result = Facter::Core::Execution.execute("ss -onp state established '( dport = :8142 )' ", { timeout: (PEStatusCheck.facter_timeout * 2) })
       { AS002: result.include?('pxp-agent') }
     end
   rescue Facter::Core::Execution::ExecutionFailure => e
